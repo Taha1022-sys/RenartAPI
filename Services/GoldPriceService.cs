@@ -9,7 +9,7 @@ namespace Renart.Services
     {
         private readonly HttpClient _httpClient;
         private readonly ILogger<GoldPriceService> _logger;
-        private decimal _cachedGoldPrice = 75.00m; 
+        private decimal _cachedGoldPrice = 125.00m; // Güncel fallback değer
 
         public GoldPriceService(HttpClient httpClient, ILogger<GoldPriceService> logger)
         {
@@ -22,12 +22,25 @@ namespace Renart.Services
             try
             {
                 var response = await _httpClient.GetStringAsync("https://api.metals.live/v1/spot/gold");
-                var goldData = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(response);
-                
-                if (goldData?.price != null)
+                _logger.LogInformation($"Gold API response: {response}");
+
+                decimal pricePerOunce = 0;
+                try {
+                    var goldArray = Newtonsoft.Json.JsonConvert.DeserializeObject<List<decimal>>(response);
+                    if (goldArray != null && goldArray.Count > 0)
+                        pricePerOunce = goldArray[0];
+                } catch {}
+                if (pricePerOunce == 0) {
+                    try {
+                        var goldObj = Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(response);
+                        if (goldObj != null && goldObj.gold != null)
+                            pricePerOunce = (decimal)goldObj.gold;
+                    } catch {}
+                }
+
+                if (pricePerOunce > 0)
                 {
-                    decimal pricePerOunce = goldData.price;
-                    _cachedGoldPrice = pricePerOunce / 31.1035m; 
+                    _cachedGoldPrice = pricePerOunce / 31.1035m;
                 }
             }
             catch (Exception ex)
