@@ -26,8 +26,8 @@ builder.Services.AddCors(options =>
                     "https://localhost:3000",
                     "https://localhost:3001", 
                     "https://localhost:3002",
-                    "http://192.168.0.14:3000"  
-                   
+                    "http://192.168.0.14:3000",
+                    "https://renart-ui-tahafurkanteke-5secc1jef-taha1022-sys-projects.vercel.app"
                   )
                   .AllowAnyHeader()
                   .AllowAnyMethod()
@@ -41,15 +41,12 @@ builder.Services.AddScoped<IGoldPriceService, GoldPriceService>();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Product Listing API V1");
-        c.RoutePrefix = string.Empty; 
-    });
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Product Listing API V1");
+    c.RoutePrefix = string.Empty; 
+});
 
 app.UseCors("ReactApp");
 app.UseHttpsRedirection();
