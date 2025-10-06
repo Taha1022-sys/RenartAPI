@@ -27,7 +27,8 @@ builder.Services.AddCors(options =>
                     "https://localhost:3001", 
                     "https://localhost:3002",
                     "http://192.168.0.14:3000",
-                    "https://renart-ui-tahafurkanteke-5secc1jef-taha1022-sys-projects.vercel.app"
+                    "https://renart-ui-tahafurkanteke-5secc1jef-taha1022-sys-projects.vercel.app",
+                    "https://renart-ui-tahafurkanteke.vercel.app"
                   )
                   .AllowAnyHeader()
                   .AllowAnyMethod()
